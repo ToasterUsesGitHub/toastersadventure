@@ -32,15 +32,12 @@ var token string
 var buffer = make([][]byte, 0)
 
 func main() {
-	// Load the sound file.
 	err := loadSound()
 	if err != nil {
-		fmt.Println("Error loading sound: ", err)
-		fmt.Println("Please copy $GOPATH/src/github.com/bwmarrin/examples/airhorn/airhorn.dca to this directory.")
+		fmt.Println("Sound corrupted: ", err)
 		return
 	}
 
-	// Create a new Discord session using the provided bot token.
 	dg, err := discordgo.New("Bot " + token)
 	if err != nil {
 		fmt.Println("Error creating Discord session: ", err)
@@ -56,8 +53,7 @@ func main() {
 	// Register guildCreate as a callback for the guildCreate events.
 	dg.AddHandler(guildCreate)
 
-	// We need information about guilds (which includes their channels),
-	// messages and voice states.
+	// Get guild information
 	dg.Identify.Intents = discordgo.IntentsGuilds | discordgo.IntentsGuildMessages | discordgo.IntentsGuildVoiceStates
 
 	// Open the websocket and begin listening.
@@ -67,7 +63,7 @@ func main() {
 	}
 
 	// Wait here until CTRL-C or other term signal is received.
-	fmt.Println("Hooves is now running.  Press CTRL-C to exit.")
+	fmt.Println("Bot is now running.  Press CTRL-C to exit.")
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
 	<-sc
@@ -101,8 +97,6 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	switch commando {
 	case ".ping":
 		s.ChannelMessageSend(m.ChannelID, "🏓 Pong! 🏓")
-	case ".imlost":
-
 	case ".airhorn":
 		// Find the channel that the message came from.
 		c, err := s.State.Channel(m.ChannelID)
